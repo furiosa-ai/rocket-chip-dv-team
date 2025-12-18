@@ -1212,21 +1212,23 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
 
     when (t.valid && !t.exception) {
       when (wfd) {
-        printf ("%d 0x%x (0x%x) f%d p%d 0xXXXXXXXXXXXXXXXX\n", t.priv, t.iaddr, t.insn, rd, rd+32.U)
+        printf ("%d 0x%x (0x%x) f%d p%d 0xXXXXXXXXXXXXXXXX DASM(%x)\n", t.priv, t.iaddr, t.insn, rd, rd+32.U, coreMonitorBundle.inst)
       }
       .elsewhen (wxd && rd =/= 0.U && has_data) {
-        printf ("%d 0x%x (0x%x) x%d 0x%x\n", t.priv, t.iaddr, t.insn, rd, rf_wdata)
+        printf ("%d 0x%x (0x%x) x%d 0x%x DASM(%x)\n", t.priv, t.iaddr, t.insn, rd, rf_wdata, coreMonitorBundle.inst)
       }
       .elsewhen (wxd && rd =/= 0.U && !has_data) {
-        printf ("%d 0x%x (0x%x) x%d p%d 0xXXXXXXXXXXXXXXXX\n", t.priv, t.iaddr, t.insn, rd, rd)
+        printf ("%d 0x%x (0x%x) x%d p%d 0xXXXXXXXXXXXXXXXX DASM(%x)\n", t.priv, t.iaddr, t.insn, rd, rd, coreMonitorBundle.inst)
       }
       .otherwise {
-        printf ("%d 0x%x (0x%x)\n", t.priv, t.iaddr, t.insn)
+        printf ("%d 0x%x (0x%x) DASM(%x)\n", t.priv, t.iaddr, t.insn, coreMonitorBundle.inst)
       }
     }
-
     when (ll_wen && rf_waddr =/= 0.U) {
       printf ("x%d p%d 0x%x\n", rf_waddr, rf_waddr, rf_wdata)
+    }
+    when (t.valid && t.exception) {
+      printf ("%d 0x%x (0x%x) DASM(%x)\n", t.priv, t.iaddr, t.insn, coreMonitorBundle.inst)
     }
   }
   else {
